@@ -1,7 +1,8 @@
 import pygame
 from physics import Physics
-
+pygame.init()
 physics = Physics()
+
 class Bottles:
     def __init__(self, x, y, v0x, v0y):
         self.pos = [x, y]
