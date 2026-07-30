@@ -38,3 +38,14 @@ class Dftmenu:
     def drawdefeat(self, screen):
         #Botones
         pygame.draw.rect(screen, (255, 0, 0), self.xtbt)
+
+#Clase del menu de victoria
+class Wnmenu:
+    def __init__(self):
+        #Defino sus botones
+        self.xtbt = pygame.Rect(140, 200, 24, 12)
+
+    #Dibujo el menu
+    def drawwon(self, screen):
+        #Botones
+        pygame.draw.rect(screen, (255, 0, 0), self.xtbt)
