@@ -1,6 +1,7 @@
 # se importa la libreria sobre la cual correrá el programa
 import pygame
 from levels import Objects
+pygame.init()
 object = Objects()
 
 #Clase del menu principal
