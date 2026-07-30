@@ -7,9 +7,8 @@ from menus import Psmenu
 from menus import Dftmenu
 from menus import Wnmenu
 from enemy import Truck
-from gasbombs import Gasbombs
 from physics import Physics
-from bottles import Bottles
+from scores import scores
 pygame.init()
 
 #le pongo nombre a la ventana del programa
@@ -32,10 +31,10 @@ truck = Truck()
 physics = Physics()
 
 remove = False
-fuente = pygame.font.SysFont("Arial", 15)
-superficie_texto1 = fuente.render("             ¡Perdiste!", True, (255, 255, 255))
-superficie_texto2 = fuente.render("Reprobaste Paro En Varias Variables", True, (255, 255, 255))
-superficie_texto3 = fuente.render("Pasaste!!!, sigue EnTroplia", True, (255, 255, 255))
+fuente = pygame.font.SysFont("Agency FB", 15)
+superficie_texto1 = fuente.render("¡Perdiste!", True, (255, 0, 0))
+superficie_texto2 = fuente.render("Reprobaste Paro En Varias Variables", True, (255, 0, 0))
+superficie_texto3 = fuente.render("Pasaste!!!, sigue EnTroplia", True, (0, 255, 0))
 shoot_direction = ''
 
 while runningcode:
@@ -71,9 +70,22 @@ while runningcode:
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 player.MOUSEDOWN(event)
-                
-        for gasbomb in truck.gasbombs[:]:
 
+        #Actualizo al jugador
+        player.update_player(dt)
+
+        xf = player.hitbox.midbottom[0]
+        yf = player.hitbox.midbottom[1]
+
+        #Actualizo al camion
+        truck.update_truck(dt, object.screen, xf, yf, shoot_direction)
+
+        #llamo a la funcion para actualizar los datos del puntaje
+        scores.update_score(dt)
+        scores.drawscore(object.screen)
+
+        for gasbomb in truck.gasbombs[:]:
+        
             if player.hitbox.colliderect(gasbomb.hitbox):
                 player.damage(10)
                 player.inatack = True
@@ -105,22 +117,12 @@ while runningcode:
         for bottle in player.bottles:
             if truck.hitbox.colliderect(bottle.hitbox):
                 truck.damage(10)
-                print(truck.health)
 
         if truck.alive == False:
             state = 'won'
 
         if player.alive == False:
             state = 'defeat'
-
-        #Actualizo al jugador
-        player.update_player(dt)
-
-        xf = player.hitbox.midbottom[0]
-        yf = player.hitbox.midbottom[1]
-
-        #Actualizo al camion
-        truck.update_truck(dt, object.screen, xf, yf, shoot_direction)
 
         #Llamo a la funcion para dibujar el juego
         truck.drawenemy(object.screen)
@@ -131,8 +133,8 @@ while runningcode:
 
     if state == 'defeat':
         object.screen.fill((0,0,0))
-        object.screen.blit(superficie_texto1, (76, 56))
-        object.screen.blit(superficie_texto2, (76, 112))
+        object.screen.blit(superficie_texto1, (130, 56))
+        object.screen.blit(superficie_texto2, (80, 112))
         #Deteccion de teclas y de mouse
         for event in pygame.event.get():
             #Programo que el juego se cierre cuando el usuario haga clic en la x de la ventana
