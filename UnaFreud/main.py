@@ -5,6 +5,7 @@ from levels import Objects
 from menus import Pmenu
 from menus import Psmenu
 from menus import Dftmenu
+from menus import Wnmenu
 from enemy import Truck
 from gasbombs import Gasbombs
 from physics import Physics
@@ -26,6 +27,7 @@ player = Player()
 pmenu = Pmenu()
 psmenu = Psmenu()
 dftmenu = Dftmenu()
+wnmenu = Wnmenu()
 truck = Truck()
 physics = Physics()
 
@@ -33,6 +35,7 @@ remove = False
 fuente = pygame.font.SysFont("Arial", 15)
 superficie_texto1 = fuente.render("             ¡Perdiste!", True, (255, 255, 255))
 superficie_texto2 = fuente.render("Reprobaste Paro En Varias Variables", True, (255, 255, 255))
+superficie_texto3 = fuente.render("Pasaste!!!, sigue EnTroplia", True, (255, 255, 255))
 shoot_direction = ''
 
 while runningcode:
@@ -98,7 +101,14 @@ while runningcode:
             player.state = 'stationary'
             player.hitbox.size = player.stationary_size
             player.hitbox.midbottom = player.pos
-            
+
+        for bottle in player.bottles:
+            if truck.hitbox.colliderect(bottle.hitbox):
+                truck.damage(10)
+                print(truck.health)
+
+        if truck.alive == False:
+            state = 'won'
 
         if player.alive == False:
             state = 'defeat'
@@ -115,6 +125,7 @@ while runningcode:
         #Llamo a la funcion para dibujar el juego
         truck.drawenemy(object.screen)
         player.drawplayer(object.screen)
+
         #Muestro lo dibujado
         pygame.display.flip()
 
@@ -137,7 +148,33 @@ while runningcode:
         #Llamo a la funcion para dibujar el menu principal
         dftmenu.drawdefeat(object.screen)
         pygame.display.flip()
-    
+
+    if state == 'won':
+        #Limpio imagen
+        object.screen.fill((30, 30, 30))
+        object.screen.blit(superficie_texto3, (76, 56))
+
+        #Deteccion de teclas y de mouse
+        for event in pygame.event.get():
+            #Programo que el juego se cierre cuando el usuario haga clic en la x de la ventana
+            if event.type == pygame.QUIT:
+                runningcode = False
+        
+            #Deteccion de mouse
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                #Configuracion del boton "play"
+                if pmenu.stbt.collidepoint(event.pos):
+                    state = 'play'
+        
+                #Configuracion del boton "exit"
+                if pmenu.xtbt.collidepoint(event.pos):
+                    runningcode = False
+                
+        #Llamo a la funcion para dibujar el menu principal
+        wnmenu.drawwon(object.screen)
+        
+        #Muestro lo dibujado
+        pygame.display.flip()
     #Inicializacion del menu principal
     if state == 'pmenu':
 
