@@ -1,6 +1,7 @@
 import pygame
 from levels import Objects
 from physics import Physics
+pygame.init()
 physics = Physics()
 object = Objects()
 
