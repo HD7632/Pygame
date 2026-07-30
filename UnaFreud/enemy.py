@@ -1,9 +1,11 @@
 # se importa la libreria sobre la cual correrá el programa
 import pygame
-from levels import Objects
-from gasbombs import Gasbombs
 
-object = Objects()
+from gasbombs import Gasbombs
+from scores import scores
+
+pygame.init()
+
 class Truck:
     def __init__(self):
         self.v = [-38, 0]
@@ -15,10 +17,12 @@ class Truck:
         self.direction = 'left'
         self.shooter1dt = 0
         self.shooter2dt = 0
-        self.health = 15000
+        self.health = 4500
         self.img_pos = [0, 93]
         self.gasbombs = []
         self.alive = True
+        self.inmortal = False
+        self.inmortaldt = 0
 
         #Jugador
         self.img = pygame.image.load("Pygame/UnaFreud/Assets/Enemy/Truck_Left.png").convert_alpha()
@@ -42,14 +46,20 @@ class Truck:
             self.direction = 'left'
 
     def damage(self, amount):
-        self.health = self.health - amount
+        
+        if not self.inmortal:
+            self.health = self.health - amount
+            self.inmortal = True
+            self.inmortaldt = 0
+            scores.calculate()
+
         if self.health <= 0:
             self.alive = False
             
     def shootdt(self, dt, xf, yf, shoot_direction):
                 self.shooter1dt = self.shooter1dt + dt
                 self.shooter2dt = self.shooter2dt + dt
-                if self.shooter1dt >= 1:
+                if self.shooter1dt >= 0.4:
                     self.shooter1dt = 0
 
                     if self.direction == 'right':
@@ -75,8 +85,8 @@ class Truck:
                         bomb.thrw(xf, yf)
                         self.gasbombs.append(bomb)
                         
-                if self.shooter2dt >= 1.5:
-                    self.shooter2dt = 0.5
+                if self.shooter2dt >= 0.8:
+                    self.shooter2dt = 0.4
                     if self.direction == 'right':
 
                         if (self.hitbox.x+34, self.hitbox.y+6) > (xf, yf):
@@ -122,6 +132,13 @@ class Truck:
             screen.blit(self.img, (self.img_pos[0], self.img_pos[1]))
     
     def update_truck(self, dt, screen, xf, yf, shoot_direction):
+        if self.inmortal:
+            self.inmortaldt = self.inmortaldt+dt
+
+            if self.inmortaldt >= 0.5:
+                self.inmortal = False
+                self.inmortaldt = 0
+
         self.mvnt(dt)
         self.shootdt(dt, xf, yf, shoot_direction)
         self.update_img_pos()
