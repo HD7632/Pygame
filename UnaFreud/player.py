@@ -31,6 +31,7 @@ class Player:
         self.bottles = []
         self.v0x = 0
         self.v0y = 0
+
         #Hitbox 
         self.hitbox = pygame.Rect(46, 124, 6, 30)
         self.hitbox.size = (6, 30)
@@ -89,9 +90,7 @@ class Player:
             self.can_thrw = True
 
     def thrw(self):
-        print("thrw")
-        bottle = Bottles(self.hitbox.center[0], self.hitbox[1])
-        bottle.thrw(self.v0x, self.v0y)
+        bottle = Bottles(self.hitbox.centerx, self.hitbox.centery, self.v0x, self.v0y)
         self.bottles.append(bottle)
     
     #Colisiones
@@ -135,6 +134,7 @@ class Player:
         #Trotar hacia la izquierda
         if keys[pygame.K_a]:
             self.direction = 'left'
+            
             if self.state != 'crouched':
                 self.v[0] = -168
                 self.state = 'sprinting'
@@ -142,15 +142,6 @@ class Player:
                 self.hitbox.midbottom = self.pos
             else:
                 self.v[0] = -28
-
-        if keys[pygame.K_w]:
-            self.v0y = self.v0y - 280
-
-        if keys[pygame.K_e]:
-            self.v0x = self.v0x + 140
-
-        if keys[pygame.K_q]:
-            self.v0x = self.v0x + -140
 
         #Correr
         if keys[pygame.K_LSHIFT]:
@@ -164,7 +155,6 @@ class Player:
                 
                 else:
                     self.v[0] = 63
-                self.v0x = self.v0x + 140
 
             #Correr hacia la izquierda
             if keys[pygame.K_a]:
@@ -175,7 +165,6 @@ class Player:
                     self.hitbox.midbottom = self.pos
                 else:
                     self.v[0] = -63
-                self.v0x = self.v0x - 140
 
     #Deteccion y asignacion de teclas de un pulso
     def KEYDOWN(self, event):
@@ -189,21 +178,29 @@ class Player:
                 #Girar a la derecha
                 if event.key == pygame.K_d:
                     self.direction = 'right'
+                    self.v0x = 200
                     if self.state != 'crouched':
                         self.state = 'sprinting'
                         self.hitbox.size = self.sprinting_size
                         self.hitbox.midbottom = self.pos
-                        self.v0x = self.v0x + 140
 
                 #Girar a la izquierda
                 if event.key == pygame.K_a:
                     self.direction = 'left'
+                    self.v0x = -200
                     if self.state != 'crouched':
                         self.state = 'sprinting'
                         self.hitbox.size = self.sprinting_size
                         self.hitbox.midbottom = self.pos
-                        self.v0x = self.v0x - 140
 
+                if event.key == pygame.K_w:
+                    self.v0y = -220
+                
+                if event.key == pygame.K_e:
+                    self.v0x = 200
+                
+                if event.key == pygame.K_q:
+                    self.v0x = -200
     def MOUSEDOWN(self, event):
         #Deteccion de mouse
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -225,7 +222,6 @@ class Player:
                         self.state = 'stationary'
                         self.hitbox.size = self.stationary_size
                         self.hitbox.midbottom = self.pos
-                        self.v0x = self.v0x - 140
 
                 #Devuelvo la velocidad original al personaje
                 if event.key == pygame.K_a:
@@ -234,16 +230,9 @@ class Player:
                         self.state = 'stationary'
                         self.hitbox.size = self.stationary_size
                         self.hitbox.midbottom = self.pos
-                        self.v0x = self.v0x +140
 
                 if event.key == pygame.K_w:
-                    self.v0y = self.v0y + 280
-
-                if event.key == pygame.K_e:
-                    self.v0x = self.v0x - 140
-
-                if event.key == pygame.K_q:
-                    self.v0x = self.v0x + 140
+                    self.v0y = 0
     
     def damage(self, amount):
         if not self.inmortal:
@@ -308,6 +297,9 @@ class Player:
         elif self.inatack == True:
             screen.blit(self.img, (self.hitbox.x-5, self.hitbox.y-9))
 
+        for bottle in self.bottles:
+            bottle.drawbottle(screen)
+
     #Funcion que recopila todas las funciones/mecanicas del jugador para un manejo mas limpio en main.py
     def update_player(self,dt):
         #Actualizo las posiciones actuales
@@ -318,6 +310,7 @@ class Player:
 
             if self.inmortaldt >= 0.5:
                 self.inmortal = False
+
         self.grvty(dt)
         self.mvnt(dt)
         self.collisions()
@@ -325,7 +318,7 @@ class Player:
         self.inatack = False
 
         if self.can_thrw == False:
-                    self.shootdt(dt)
+            self.shootdt(dt)
 
         for bottle in self.bottles:
             bottle.update_bottles(dt)
