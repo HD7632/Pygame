@@ -3,7 +3,8 @@ import pygame
 from physics import Physics
 from levels import Objects
 from bottles import Bottles
-
+from scores import scores
+pygame.init()
 physics = Physics()
 object = Objects()
 
@@ -239,6 +240,7 @@ class Player:
             self.inmortal = True
             self.inmortaldt = 0
             self.health = self.health-amount
+            scores.score = scores.score - 1000
             
         if self.health <= 0:
             self.alive = False
@@ -302,6 +304,7 @@ class Player:
 
     #Funcion que recopila todas las funciones/mecanicas del jugador para un manejo mas limpio en main.py
     def update_player(self,dt):
+        
         #Actualizo las posiciones actuales
         self.hitbox.midbottom = round(self.pos[0]), round(self.pos[1])
 
@@ -310,6 +313,7 @@ class Player:
 
             if self.inmortaldt >= 0.5:
                 self.inmortal = False
+                self.inmortaldt = 0
 
         self.grvty(dt)
         self.mvnt(dt)
