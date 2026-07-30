@@ -15,9 +15,10 @@ class Truck:
         self.direction = 'left'
         self.shooter1dt = 0
         self.shooter2dt = 0
-        
+        self.health = 15000
         self.img_pos = [0, 93]
         self.gasbombs = []
+        self.alive = True
 
         #Jugador
         self.img = pygame.image.load("Pygame/UnaFreud/Assets/Enemy/Truck_Left.png").convert_alpha()
@@ -40,10 +41,15 @@ class Truck:
             self.v[0] = -38
             self.direction = 'left'
 
+    def damage(self, amount):
+        self.health = self.health - amount
+        if self.health <= 0:
+            self.alive = False
+            
     def shootdt(self, dt, xf, yf, shoot_direction):
                 self.shooter1dt = self.shooter1dt + dt
                 self.shooter2dt = self.shooter2dt + dt
-                if self.shooter1dt >= 0.5:
+                if self.shooter1dt >= 1:
                     self.shooter1dt = 0
 
                     if self.direction == 'right':
@@ -69,7 +75,7 @@ class Truck:
                         bomb.thrw(xf, yf)
                         self.gasbombs.append(bomb)
                         
-                if self.shooter2dt >= 1:
+                if self.shooter2dt >= 1.5:
                     self.shooter2dt = 0.5
                     if self.direction == 'right':
 
