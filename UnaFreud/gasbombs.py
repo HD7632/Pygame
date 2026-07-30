@@ -44,4 +44,3 @@ class Gasbombs:
         self.hitbox.x = self.hitbox.x+self.vx*dt
         
         self.hitbox.y = self.hitbox.y+self.vy*dt
-        
